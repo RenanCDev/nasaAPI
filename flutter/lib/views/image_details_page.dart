@@ -17,12 +17,19 @@ class ImageDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
-              image.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(Icons.error);
-              },
+            Expanded(
+              child: InteractiveViewer(
+                panEnabled: true,
+                minScale: 1.0,
+                maxScale: 4.0,
+                child: Image.network(
+                  image.imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(Icons.error);
+                  },
+                ),
+              ),
             ),
             SizedBox(height: 16),
             Text(
