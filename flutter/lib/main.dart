@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'views/home_page.dart';
+import 'controllers/theme_controller.dart';
+import 'controllers/favorite_controller.dart';
+import 'translations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,8 +16,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      translations: Messages(),
+      locale: Locale('en', 'US'),
+      fallbackLocale: Locale('pt', 'BR'),
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('pt', 'BR'),
+      ],
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       debugShowCheckedModeBanner: false,
-      title: 'Space Explorer',
+      title: 'appTitle'.tr,
       theme: ThemeData.light().copyWith(
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: customSwatch,
@@ -28,6 +44,10 @@ class MyApp extends StatelessWidget {
       ),
       themeMode: _themeController.isDarkMode.value ? ThemeMode.dark : ThemeMode.light,
       home: HomePage(),
+      initialBinding: BindingsBuilder(() {
+        Get.put(ThemeController());
+        Get.put(FavoriteController());
+      }),
     );
   }
 }
