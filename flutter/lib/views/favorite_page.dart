@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../controllers/favorite_controller.dart';
 import '../controllers/navBar_controller.dart';
 import '../controllers/theme_controller.dart';
@@ -46,6 +47,7 @@ class FavoritePage extends StatelessWidget {
           if (favoriteImages.isEmpty) {
             return Center(child: Text("noFavoritesAdded".tr));
           }
+          final locale = Get.locale?.languageCode ?? 'en';
           if (favoriteController.isGridLayout.value) {
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -98,6 +100,7 @@ class FavoritePage extends StatelessWidget {
               itemCount: favoriteImages.length,
               itemBuilder: (context, index) {
                 final image = favoriteImages[index];
+                final formattedDate = DateFormat.yMMMMd(locale).format(DateTime.parse(image.date));
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   shape: RoundedRectangleBorder(
@@ -120,7 +123,7 @@ class FavoritePage extends StatelessWidget {
                       image.title,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(image.date),
+                    subtitle: Text(formattedDate),
                     trailing: IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {

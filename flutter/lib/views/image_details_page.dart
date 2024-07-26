@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../models/nasa_image.dart';
 import '../controllers/theme_controller.dart';
 import '../controllers/favorite_controller.dart';
@@ -12,6 +13,8 @@ class ImageDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = Get.locale?.languageCode ?? 'en';
+    final formattedDate = DateFormat.yMMMMd(locale).format(DateTime.parse(image.date));
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).brightness == Brightness.dark ? customSwatchSecundary : customSwatch,
@@ -116,7 +119,7 @@ class ImageDetailsPage extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          image.date,
+                          formattedDate,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey,

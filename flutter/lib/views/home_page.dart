@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:intl/intl.dart';
 import '../controllers/space_controller.dart';
 import '../controllers/navBar_controller.dart';
 import '../controllers/theme_controller.dart';
@@ -20,6 +21,9 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: MyNewAppBar(),
       body: Obx(() {
+        if (controller.isLoading.value || controller.isTranslating.value) {
+          return Center(child: CircularProgressIndicator());
+        }
         if (themeController.isGridLayout.value) {
           return SecundaryLayout();
         } else {
@@ -98,13 +102,18 @@ class MyNewAppBar extends StatelessWidget implements PreferredSizeWidget {
           },
         )),
         PopupMenuButton<String>(
-          onSelected: (String value) {
+          onSelected: (String value) async {
+            if (Get.locale?.languageCode == value) {
+              return;
+            }
             if (value == 'en') {
               Get.updateLocale(Locale('en', 'US'));
               Get.find<FavoriteController>().updateLanguage('en');
+              await spaceController.updateLanguage('en');
             } else if (value == 'pt') {
               Get.updateLocale(Locale('pt', 'BR'));
               Get.find<FavoriteController>().updateLanguage('pt');
+              await spaceController.updateLanguage('pt');
             }
           },
           icon: Icon(
@@ -149,6 +158,8 @@ class MainLayout extends StatelessWidget {
               itemCount: nasaImages.length,
               itemBuilder: (context, index) {
                 final image = nasaImages[index];
+                final locale = Get.locale?.languageCode ?? 'en';
+                final formattedDate = DateFormat.yMMMMd(locale).format(DateTime.parse(image.date));
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                   shape: RoundedRectangleBorder(
@@ -171,7 +182,7 @@ class MainLayout extends StatelessWidget {
                       image.title,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(image.date),
+                    subtitle: Text(formattedDate),
                     onTap: () {
                       Get.to(() => ImageDetailsPage(image: image));
                     },

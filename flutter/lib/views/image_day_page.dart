@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../controllers/image_day_controller.dart';
 import '../controllers/favorite_controller.dart';
 import '../controllers/navBar_controller.dart';
@@ -59,6 +60,8 @@ class ImageDayPage extends StatelessWidget {
             return Center(child: Text('noImageForToday'.tr));
           } else {
             final image = imageDayController.imageOfTheDay.value;
+            final locale = Get.locale?.languageCode ?? 'en';
+            final formattedDate = DateFormat.yMMMMd(locale).format(DateTime.parse(image.date));
             return Stack(
               children: [
                 // Imagem de fundo
@@ -133,7 +136,7 @@ class ImageDayPage extends StatelessWidget {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                image.date,
+                                formattedDate,
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey,
