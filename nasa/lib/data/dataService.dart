@@ -1,7 +1,9 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/nasa_image.dart';
 
 enum TableStatus { idle, loading, ready, error }
@@ -10,12 +12,18 @@ class DataService {
   final ValueNotifier<Map<String, dynamic>> tableStateNotifier =
       ValueNotifier({'status': TableStatus.idle, 'dataObjects': []});
   int _selectedQuantity = 10;
+  final String _googleTranslateApiKey = 'AIzaSyDFOl_kuFleMqKRAnvE8McG6XY2JKcxZVw';
+  Map<String, Map<String, String>> _translationCache = {};
+
+  DataService() {
+    _loadTranslationCache();
+  }
 
   void setSelectedQuantity(int quantity) {
     _selectedQuantity = quantity;
   }
 
-  void carregarNasaImages() async {
+  Future<void> carregarNasaImages() async {
     var nasaUri = Uri(
       scheme: 'https',
       host: 'api.nasa.gov',
@@ -61,6 +69,8 @@ class DataService {
       // Manter apenas a quantidade necessária de imagens
       validImages = validImages.take(_selectedQuantity).toList();
 
+      await translateImages(validImages, Get.locale?.languageCode ?? 'en');
+
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': validImages,
@@ -71,6 +81,71 @@ class DataService {
         'dataObjects': []
       };
     }
+  }
+
+  Future<void> translateImages(List<NasaImage> images, String targetLanguage) async {
+    for (var i = 0; i < images.length; i++) {
+      final image = images[i];
+      if (_translationCache.containsKey(image.title) && _translationCache[image.title]!.containsKey(targetLanguage)) {
+        images[i] = NasaImage(
+          title: _translationCache[image.title]![targetLanguage]!,
+          date: image.date,
+          description: _translationCache[image.description]![targetLanguage]!,
+          imageUrl: image.imageUrl,
+        );
+      } else {
+        final translatedTitle = await _translateText(image.title, targetLanguage);
+        final translatedDescription = await _translateText(image.description, targetLanguage);
+
+        images[i] = NasaImage(
+          title: translatedTitle,
+          date: image.date,
+          description: translatedDescription,
+          imageUrl: image.imageUrl,
+        );
+
+        _translationCache.putIfAbsent(image.title, () => {})[targetLanguage] = translatedTitle;
+        _translationCache.putIfAbsent(image.description, () => {})[targetLanguage] = translatedDescription;
+        
+        await _saveTranslationCache();
+      }
+    }
+  }
+
+  Future<String> _translateText(String text, String targetLanguage) async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://translation.googleapis.com/language/translate/v2')
+            .replace(queryParameters: {
+              'q': text,
+              'target': targetLanguage,
+              'key': _googleTranslateApiKey,
+            }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data']['translations'][0]['translatedText'];
+      } else {
+        return text; // Retorna o texto original em caso de falha na tradução
+      }
+    } catch (e) {
+      return text; // Retorna o texto original em caso de exceção
+    }
+  }
+
+  Future<void> _loadTranslationCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cacheString = prefs.getString('translationCache');
+    if (cacheString != null) {
+      _translationCache = Map<String, Map<String, String>>.from(jsonDecode(cacheString));
+    }
+  }
+
+  Future<void> _saveTranslationCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cacheString = jsonEncode(_translationCache);
+    await prefs.setString('translationCache', cacheString);
   }
 }
 
