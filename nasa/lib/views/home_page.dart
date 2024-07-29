@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
       appBar: MyNewAppBar(),
       body: Obx(() {
         if (controller.isLoading.value || controller.isTranslating.value) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
         if (themeController.isGridLayout.value) {
           return SecundaryLayout();

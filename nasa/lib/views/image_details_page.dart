@@ -4,12 +4,9 @@ import 'package:intl/intl.dart';
 import '../models/nasa_image.dart';
 import '../controllers/theme_controller.dart';
 import '../controllers/favorite_controller.dart';
-
 class ImageDetailsPage extends StatelessWidget {
   final NasaImage image;
   final FavoriteController favoriteController = Get.find<FavoriteController>();
-
-  // ignore: use_key_in_widget_constructors
   ImageDetailsPage({required this.image});
 
   @override
@@ -120,13 +117,8 @@ class ImageDetailsPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-<<<<<<< HEAD:nasa/lib/views/image_details_page.dart
-                          image.date,
-                          style: const TextStyle(
-=======
                           formattedDate,
-                          style: TextStyle(
->>>>>>> 3d26628b62e8af19e183bb43e0b56565b021f96e:flutter/lib/views/image_details_page.dart
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.grey,
                           ),
@@ -171,12 +163,9 @@ class ImageDetailsPage extends StatelessWidget {
     );
   }
 }
-
 class ImageZoomPage extends StatelessWidget {
   final NasaImage image;
-
-  const ImageZoomPage({super.key, required this.image});
-
+  const ImageZoomPage({required this.image});
   @override
   Widget build(BuildContext context) {
     return Scaffold(

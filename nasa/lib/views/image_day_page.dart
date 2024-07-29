@@ -6,15 +6,11 @@ import '../controllers/favorite_controller.dart';
 import '../controllers/navBar_controller.dart';
 import '../controllers/theme_controller.dart';
 import '../models/nasa_image.dart';
-
-// ignore: use_key_in_widget_constructors
 class ImageDayPage extends StatelessWidget {
   final ImageDayController imageDayController = Get.put(ImageDayController());
   final FavoriteController favoriteController = Get.find<FavoriteController>();
-
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         navBarController.currentIndex.value = 1;
@@ -138,13 +134,8 @@ class ImageDayPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-<<<<<<< HEAD:nasa/lib/views/image_day_page.dart
-                                image.date,
-                                style: const TextStyle(
-=======
                                 formattedDate,
-                                style: TextStyle(
->>>>>>> 3d26628b62e8af19e183bb43e0b56565b021f96e:flutter/lib/views/image_day_page.dart
+                                style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey,
                                 ),
@@ -192,13 +183,9 @@ class ImageDayPage extends StatelessWidget {
     );
   }
 }
-
 class ImageZoomPage extends StatelessWidget {
   final NasaImage image;
-
-  // ignore: prefer_const_constructors_in_immutables, use_key_in_widget_constructors
-  ImageZoomPage({required this.image});
-
+  const ImageZoomPage({required this.image});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
